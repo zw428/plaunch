@@ -1,6 +1,8 @@
 # plaunch
 Pretty Launcher
 
+![preview](https://github.com/zw428/plaunch/blob/master/ex.png?raw=true)
+
 `plaunch` is a minimal program launcher written in python using `pyqt5` that displays a list of programs with images next to them.
 
 I made this with games in mind, mostly because I have a mix of steam and non-steam games, and I'd rather not depend on steam to launch
