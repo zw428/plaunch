@@ -24,8 +24,5 @@ for example, one of my lines looks like this: `"dcss.png","DCSS","crawl-tiles"`
 Single click to select, arrow key navigation, double click or enter to launch
 
 ## Plans:
-- add screenshot
 - nicer styling
-- forced image dimensions
 - keyboard searching
-- categories
