@@ -3,13 +3,12 @@ Pretty Launcher
 
 ![preview](https://github.com/zw428/plaunch/blob/master/ex.png?raw=true)
 
-`plaunch` is a minimal program launcher written in python using `pyqt5` that
-displays a list of programs with images next to them.
+`plaunch` is a minimal launcher written in python using `pyqt5` that displays a
+list of items that run shell commands when chosen.
 
-I made this with games in mind, mostly because I have a mix of steam and
-non-steam games, and I'd rather not depend on steam to launch everything.
-Nothing is stopping anyone from using this for any type of media like movies or
-albums/playlists, or as a program launcher.
+`plaunch` is meant to be used to launch any type of media, like games, movies,
+playlists, etc., for those who want a nicer visual representation of what they
+have to choose from.
 
 ## Usage
 
