@@ -24,4 +24,4 @@ Single click to select, arrow key navigation, double click or enter to launch
 
 ## Plans:
 - nicer styling
-- keyboard searching
+- whole word keyboard searching
