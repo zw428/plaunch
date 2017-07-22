@@ -39,7 +39,7 @@ class media_menu(QScrollArea):
         sys.exit(self.app.exec_())
 
     def add_row(self, image_path, title, command):
-        row = media_row(image_path,title,command)
+        row = media_row(self,image_path,title,command)
 
         if self.last_row != None:
             self.last_row.next_row = row
@@ -96,18 +96,13 @@ class media_menu(QScrollArea):
                 break
 
     def handle_arrows(self,event):
-        y = media_row.selected.image.y()
-        h = media_row.selected.image.height()
-
         if event.key() == Qt.Key_Up:
             if media_row.selected.prev_row:
                 media_row.selected.prev_row.select()
-                self.ensureVisible(0,y,0,h*2)
 
         if event.key() == Qt.Key_Down:
             if media_row.selected.next_row:
                 media_row.selected.next_row.select()
-                self.ensureVisible(0,y+h,0,h*2)
 
         if event.key() == Qt.Key_Return:
             media_row.selected.run_command()
@@ -120,6 +115,11 @@ class media_menu(QScrollArea):
         if media_row.selected:
             self.handle_arrows(event)
 
+    def ensure_row_visible(self, row):
+        y = row.image.y()
+        h = row.image.height()
+        self.ensureVisible(0,y,0,h*2)
+
     color_dark_arr  = [20,20,20]
     color_light_arr = [220,220,220]
     color_dark      = "rgb(%s,%s,%s)" % (color_dark_arr[0], color_dark_arr[1], color_dark_arr[2])
@@ -128,9 +128,11 @@ class media_menu(QScrollArea):
 
 class media_row(QHBoxLayout):
 
-    def __init__(self, image_path, title, command):
+    def __init__(self, media_menu, image_path, title, command):
 
         super().__init__()
+
+        self.media_menu = media_menu
 
         self.title = title
 
@@ -168,6 +170,7 @@ class media_row(QHBoxLayout):
         self.label.setStyleSheet(self.selected_style)
 
         media_row.selected = self
+        self.media_menu.ensure_row_visible(self)
 
     def deselect(self):
         self.image.setStyleSheet(self.deselected_style)
@@ -184,4 +187,4 @@ class media_row(QHBoxLayout):
 
 if __name__ == "__main__":
 
-    test = media_menu();
+    menu = media_menu();
