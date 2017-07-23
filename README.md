@@ -20,7 +20,8 @@ for example, one of my lines looks like this: `"dcss.png","DCSS","crawl-tiles"`
 
 ## Using
 
-Single click to select, arrow key navigation, double click or enter to launch
+Single click to select, arrow key navigation, double click or enter to launch.
+You can also jump to an entry by pressing the first letter of its title.
 
 ## Plans:
 - nicer styling
