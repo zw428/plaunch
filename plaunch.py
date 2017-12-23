@@ -9,9 +9,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 
 class media_menu(QScrollArea):
-
     def __init__(self):
-
         self.app = QApplication(sys.argv)
 
         super().__init__()
@@ -127,7 +125,6 @@ class media_menu(QScrollArea):
 
 
 class media_row(QHBoxLayout):
-
     def __init__(self, media_menu, image_path, title, command):
 
         super().__init__()
@@ -186,5 +183,4 @@ class media_row(QHBoxLayout):
 
 
 if __name__ == "__main__":
-
     menu = media_menu();
