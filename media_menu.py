@@ -147,13 +147,13 @@ class media_menu(QScrollArea):
         self.ensureVisible(0,y,0,h*2)
 
     def handle_filtering(self, event, text):
-        reg = re.compile(".*" + text + ".*")
+        reg = re.compile(".*" + text.lower() + ".*")
         selected_one = False
         for widget in self.frame.layout().children():
             if not isinstance(widget,media_row):
                 continue
 
-            if reg.match(widget.title):
+            if reg.match(widget.title.lower()):
                 widget.show()
                 if not selected_one:
                     widget.select()
