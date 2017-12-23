@@ -25,13 +25,19 @@ class media_menu(QScrollArea):
 
         self.setWidget(self.frame)
 
-        pal = QPalette();
-        pal.setColor( QPalette.Window, QColor(self.color_dark_arr[0], self.color_dark_arr[1], self.color_dark_arr[2]) );
-        self.app.setPalette(pal);
+        pal = QPalette()
+        pal.setColor( QPalette.Window, QColor(self.color_dark_arr[0], self.color_dark_arr[1], self.color_dark_arr[2]) )
+        self.app.setPalette(pal)
 
         self.add_rows()
 
         self.frame.layout().addStretch(1)
+
+        self.find_frame = QFrame(self)
+        self.find_frame.setLayout(QVBoxLayout())
+        self.find_input = FilterInput(self)
+        self.find_frame.layout().addWidget(self.find_input)
+        self.find_frame.hide()
 
         self.show()
         sys.exit(self.app.exec_())
@@ -94,29 +100,68 @@ class media_menu(QScrollArea):
                 break
 
     def handle_arrows(self,event):
+        to_select = None
         if event.key() == Qt.Key_Up:
             if media_row.selected.prev_row:
-                media_row.selected.prev_row.select()
+                to_select = media_row.selected.prev_row
+
+                while to_select and not to_select.visible:
+                    to_select = to_select.prev_row
 
         if event.key() == Qt.Key_Down:
             if media_row.selected.next_row:
-                media_row.selected.next_row.select()
+                to_select = media_row.selected.next_row
 
-        if event.key() == Qt.Key_Return:
-            media_row.selected.run_command()
-            QCoreApplication.quit()
+                while to_select and not to_select.visible:
+                    to_select = to_select.next_row
+
+        if to_select:
+            to_select.select()
 
     def keyPressEvent(self, event):
-        if event.text().lower():
+        if self.app.keyboardModifiers() == Qt.ControlModifier and event.key() == Qt.Key_F:
+            if self.find_frame.isVisible():
+                self.find_frame.hide()
+            else:
+                self.find_frame.show()
+                self.find_input.setFocus()
+            return
+
+        if self.find_input.hasFocus():
+            if event.key() == Qt.Key_Escape or event.key() == Qt.Key_Return:
+                self.find_frame.hide()
+            return
+
+        elif event.text().lower():
             self.find_row_by_start_letter(event.text().lower()[0])
 
         if media_row.selected:
             self.handle_arrows(event)
 
+            if event.key() == Qt.Key_Return:
+                media_row.selected.run_command()
+                QCoreApplication.quit()
+
     def ensure_row_visible(self, row):
         y = row.image.y()
         h = row.image.height()
         self.ensureVisible(0,y,0,h*2)
+
+    def handle_filtering(self, event, text):
+        reg = re.compile(".*" + text + ".*")
+        selected_one = False
+        for widget in self.frame.layout().children():
+            if not isinstance(widget,media_row):
+                continue
+
+            if reg.match(widget.title):
+                widget.show()
+                if not selected_one:
+                    widget.select()
+                    selected_one = True
+            else:
+                widget.hide()
+                widget.deselect()
 
     color_dark_arr  = [20,20,20]
     color_light_arr = [220,220,220]
@@ -132,6 +177,8 @@ class media_row(QHBoxLayout):
         self.media_menu = media_menu
 
         self.title = title
+
+        self.visible = True
 
         self.image = QLabel()
         self.image.setPixmap( QPixmap(image_path) )
@@ -173,6 +220,16 @@ class media_row(QHBoxLayout):
         self.image.setStyleSheet(self.deselected_style)
         self.label.setStyleSheet(self.deselected_style)
 
+    def hide(self):
+        self.label.hide()
+        self.image.hide()
+        self.visible = False
+
+    def show(self):
+        self.label.show()
+        self.image.show()
+        self.visible = True
+
     def run_command(self):
         subprocess.Popen(self.command, shell=True)
 
@@ -181,6 +238,15 @@ class media_row(QHBoxLayout):
 
     selected = None
 
+class FilterInput(QLineEdit):
+    def __init__(self, media_menu):
+        super().__init__()
+
+        self.media_menu = media_menu
+
+    def keyPressEvent(self, event):
+        super().keyPressEvent(event)
+        self.media_menu.handle_filtering(event, super().text())
 
 if __name__ == "__main__":
-    menu = media_menu();
+    menu = media_menu()
