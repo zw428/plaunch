@@ -161,6 +161,9 @@ class media_menu(QScrollArea):
                 widget.hide()
                 widget.deselect()
 
+        if not selected_one:
+                media_row.selected = None
+
     color_dark_arr  = [20,20,20]
     color_light_arr = [220,220,220]
     color_dark      = "rgb(%s,%s,%s)" % (color_dark_arr[0], color_dark_arr[1], color_dark_arr[2])
