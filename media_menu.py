@@ -1,5 +1,6 @@
 import sys
 import re
+import argparse
 
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
@@ -12,6 +13,12 @@ class media_menu(QScrollArea):
         self.app = QApplication(sys.argv)
 
         super().__init__()
+
+        argparser = argparse.ArgumentParser("File should have lines formatted as: \"image_filename\",\"title\",\"shell_command\"")
+        argparser.add_argument("-s", "--sort", type=int, nargs="?", const=0, default=1, help="Whether or not to sort entries by name (0 or 1). %(default)s by default.")
+        argparser.add_argument("filename")
+
+        args = argparser.parse_args()
 
         self.setWindowTitle("plaunch")
 
@@ -28,7 +35,7 @@ class media_menu(QScrollArea):
         pal.setColor( QPalette.Window, QColor(self.color_dark_arr[0], self.color_dark_arr[1], self.color_dark_arr[2]) )
         self.app.setPalette(pal)
 
-        self.add_rows()
+        self.add_rows(args.filename, args.sort)
 
         self.frame.layout().addStretch(1)
 
@@ -52,29 +59,28 @@ class media_menu(QScrollArea):
         self.last_row = row
         self.frame.layout().addLayout( row )
 
-    def add_rows(self):
+    def add_rows(self, filename, sort):
         line_reg = re.compile(r"\ *\"(.*)\"\ *,\ *\"(.*)\"\ *,\ *\"(.*)\"\ *")
 
-        list_file_name = ""
+        file_lines = []
 
-        try:
-            list_file_name = sys.argv[1]
-        except:
-            print("Usage: " + sys.argv[0] + " filename")
-            print("File should have lines formatted as: \"image_filename\",\"title\",\"shell_command\"")
-            sys.exit()
-
-        with open(list_file_name,'r') as f:
+        with open(filename,'r') as f:
             counter=0
             for line in f:
                 counter += 1
                 match = line_reg.match(line)
 
                 if not match:
-                    print("could not parse line " + str(counter) + " of " + list_file_name)
+                    print("could not parse line " + str(counter) + " of " + filename)
                     continue
 
-                self.add_row(match[1],match[2],match[3])
+                file_lines.append([match[1], match[2], match[3]])
+
+        if sort:
+                file_lines = sorted(file_lines, key=lambda line: line[1])
+
+        for fl in file_lines:
+                self.add_row(fl[0], fl[1], fl[2])
 
     def find_row_by_start_letter(self, letter):
         index = 0
